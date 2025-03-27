@@ -8,6 +8,7 @@ interface AuthContextType {
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   loginWithGoogle: () => Promise<void>;
+  loginWithFacebook: () => Promise<void>;
   register: (email: string, password: string, name: string) => Promise<void>;
   logout: () => void;
 }
@@ -17,6 +18,7 @@ const AuthContext = createContext<AuthContextType>({
   loading: true,
   login: async () => {},
   loginWithGoogle: async () => {},
+  loginWithFacebook: async () => {},
   register: async () => {},
   logout: () => {},
 });
@@ -62,25 +64,70 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Mock Google login - would connect to a real backend with OAuth
     setLoading(true);
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Create mock Google user
+      const mockGoogleUser: User = {
+        id: 'google-user-' + Date.now().toString(),
+        email: 'user@gmail.com',
+        name: 'Google User'
+      };
+      
+      // Save to localStorage for persistence
+      localStorage.setItem('user', JSON.stringify(mockGoogleUser));
+      setUser(mockGoogleUser);
+      
+      toast({
+        title: "Login com Google realizado",
+        description: "Autenticação via Google concluída com sucesso!",
+      });
+    } catch (error) {
+      console.error("Erro ao fazer login com Google:", error);
+      toast({
+        title: "Erro de autenticação",
+        description: "Não foi possível fazer login com o Google. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const loginWithFacebook = async () => {
+    // Mock Facebook login - would connect to a real backend with OAuth
+    setLoading(true);
     
-    // Create mock Google user
-    const mockGoogleUser: User = {
-      id: 'google-user-' + Date.now().toString(),
-      email: 'user@gmail.com',
-      name: 'Google User'
-    };
-    
-    // Save to localStorage for persistence
-    localStorage.setItem('user', JSON.stringify(mockGoogleUser));
-    setUser(mockGoogleUser);
-    setLoading(false);
-    
-    toast({
-      title: "Login com Google realizado",
-      description: "Autenticação via Google concluída com sucesso!",
-    });
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Create mock Facebook user
+      const mockFacebookUser: User = {
+        id: 'facebook-user-' + Date.now().toString(),
+        email: 'user@facebook.com',
+        name: 'Facebook User'
+      };
+      
+      // Save to localStorage for persistence
+      localStorage.setItem('user', JSON.stringify(mockFacebookUser));
+      setUser(mockFacebookUser);
+      
+      toast({
+        title: "Login com Facebook realizado",
+        description: "Autenticação via Facebook concluída com sucesso!",
+      });
+    } catch (error) {
+      console.error("Erro ao fazer login com Facebook:", error);
+      toast({
+        title: "Erro de autenticação",
+        description: "Não foi possível fazer login com o Facebook. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const register = async (email: string, password: string, name: string) => {
@@ -109,7 +156,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, loginWithGoogle, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, loginWithGoogle, loginWithFacebook, register, logout }}>
       {children}
     </AuthContext.Provider>
   );

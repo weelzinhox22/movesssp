@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { User, Download, Share2, CheckCircle2 } from 'lucide-react';
+import { User, Download, Share2, CheckCircle2, Instagram } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { QRCodeSVG } from 'qrcode.react';
@@ -74,7 +74,7 @@ const IdCard = () => {
       if (navigator.share) {
         await navigator.share({
           files: [new File([imageBlob], 'carteirinha.jpg', { type: 'image/jpeg' })],
-          title: 'Minha Carteirinha CampusPass',
+          title: 'Minha Carteirinha MOVES SSP',
         });
         
         toast({
@@ -106,11 +106,14 @@ const IdCard = () => {
     }).format(date);
   };
 
+  // Data de início do semestre de transporte - 01/02/2025
+  const semesterStartDate = new Date(2025, 1, 1); // Mês é base 0 (janeiro = 0, fevereiro = 1)
+
   if (!student) {
     return (
       <Layout>
         <div className="container max-w-3xl mx-auto px-4 py-12">
-          <Alert>
+          <Alert variant="destructive">
             <AlertTitle>Cadastro incompleto</AlertTitle>
             <AlertDescription>
               Você precisa completar seu cadastro para acessar sua carteirinha.
@@ -130,6 +133,21 @@ const IdCard = () => {
   return (
     <Layout>
       <div className="container max-w-3xl mx-auto px-4 py-12">
+        <Alert className="mb-6 bg-amber-50 border-amber-200 text-amber-800">
+          <AlertDescription className="flex items-center gap-2">
+            <span>Este é apenas um protótipo sendo desenvolvido por um estudante.</span>
+            <a 
+              href="https://instagram.com/welziinho" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-flex items-center text-primary hover:underline"
+            >
+              <Instagram size={16} className="mr-1" />
+              @welziinho
+            </a>
+          </AlertDescription>
+        </Alert>
+
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold mb-2">Carteirinha Digital</h1>
           <p className="text-muted-foreground">
@@ -140,16 +158,16 @@ const IdCard = () => {
         <div className="flex flex-col items-center">
           <div 
             ref={cardRef}
-            className="w-full max-w-md bg-gradient-to-r from-primary to-primary-light rounded-xl overflow-hidden shadow-lg mb-8"
+            className="w-full max-w-md bg-gradient-to-r from-emerald-600 to-emerald-400 rounded-xl overflow-hidden shadow-lg mb-8"
           >
             <div className="bg-white/20 backdrop-blur-sm p-6">
               <div className="flex justify-between items-start">
                 <div>
-                  <h2 className="text-white font-bold text-xl">CampusPass</h2>
+                  <h2 className="text-white font-bold text-xl">MOVES SSP</h2>
                   <p className="text-white/80 text-sm">Transporte Universitário</p>
                 </div>
                 <div className="bg-white rounded-lg p-1">
-                  <CheckCircle2 className="text-primary h-6 w-6" />
+                  <CheckCircle2 className="text-emerald-600 h-6 w-6" />
                 </div>
               </div>
               
@@ -162,7 +180,7 @@ const IdCard = () => {
                       className="h-full w-full object-cover"
                     />
                   ) : (
-                    <User size={40} className="text-primary" />
+                    <User size={40} className="text-emerald-600" />
                   )}
                 </div>
                 
@@ -172,7 +190,7 @@ const IdCard = () => {
                     {student.course} • {student.graduationYear}
                   </p>
                   <p className="text-white/80 text-sm capitalize">
-                    Campus: {student.campus === 'central' ? 'Central' : student.campus}
+                    Campus: {student.campus}
                   </p>
                 </div>
               </div>
@@ -194,18 +212,24 @@ const IdCard = () => {
                 </div>
               </div>
               
-              <div className="mt-6 flex justify-center">
+              <div className="mt-6 flex flex-col items-center">
                 <div className="bg-white p-2 rounded-lg">
                   <QRCodeSVG 
-                    value={`CAMPUSPASS:${student.registrationNumber}:${student.uniqueCode}`}
+                    value={`MOVES-SSP:${student.registrationNumber}:${student.uniqueCode}`}
                     size={120}
                     level="H"
                     includeMargin={false}
                   />
                 </div>
+                
+                <div className="mt-2 text-center">
+                  <p className="text-white/80 text-xs">
+                    Início do semestre: {formatDate(semesterStartDate)}
+                  </p>
+                </div>
               </div>
               
-              <div className="mt-4 text-center">
+              <div className="mt-2 text-center">
                 <p className="text-white/80 text-xs">
                   Escaneie o QR Code para verificar a autenticidade
                 </p>
@@ -215,7 +239,7 @@ const IdCard = () => {
           
           <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md">
             <Button 
-              className="flex-1 gap-2"
+              className="flex-1 gap-2 bg-emerald-600 hover:bg-emerald-700"
               onClick={handleDownload}
               disabled={downloading}
             >
@@ -225,7 +249,7 @@ const IdCard = () => {
             
             <Button 
               variant="outline"
-              className="flex-1 gap-2"
+              className="flex-1 gap-2 border-emerald-600 text-emerald-600 hover:bg-emerald-50"
               onClick={handleShare}
             >
               <Share2 size={18} />
@@ -233,14 +257,14 @@ const IdCard = () => {
             </Button>
           </div>
           
-          <Card className="w-full max-w-md mt-8">
-            <CardHeader>
+          <Card className="w-full max-w-md mt-8 border-emerald-100">
+            <CardHeader className="bg-emerald-50 rounded-t-lg">
               <CardTitle>Instruções</CardTitle>
               <CardDescription>
                 Como usar sua carteirinha digital
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 pt-6">
               <div className="space-y-2">
                 <h3 className="font-semibold">1. Apresente ao motorista</h3>
                 <p className="text-sm text-muted-foreground">
@@ -267,6 +291,37 @@ const IdCard = () => {
                 Em caso de problemas, entre em contato com a administração do transporte universitário.
               </p>
             </CardFooter>
+          </Card>
+          
+          <Card className="w-full max-w-md mt-8 border-emerald-100">
+            <CardHeader className="bg-emerald-50 rounded-t-lg">
+              <CardTitle>Calendário de Transporte</CardTitle>
+              <CardDescription>
+                Informações importantes sobre o semestre atual
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4 pt-6">
+              <div className="space-y-2">
+                <h3 className="font-semibold">Início do semestre</h3>
+                <p className="text-sm">
+                  <span className="font-medium">01/02/2025</span> - Início das operações de transporte
+                </p>
+              </div>
+              
+              <div className="space-y-2">
+                <h3 className="font-semibold">Renovação da carteirinha</h3>
+                <p className="text-sm text-muted-foreground">
+                  Renove sua carteirinha até 15/01/2025 para garantir acesso desde o primeiro dia de aula.
+                </p>
+              </div>
+              
+              <div className="space-y-2">
+                <h3 className="font-semibold">Feriados e recesso</h3>
+                <p className="text-sm text-muted-foreground">
+                  Consulte o calendário completo na seção "Calendário" do aplicativo.
+                </p>
+              </div>
+            </CardContent>
           </Card>
         </div>
       </div>

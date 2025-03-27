@@ -7,15 +7,16 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import Layout from '@/components/Layout';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Facebook } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { Separator } from '@/components/ui/separator';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const { login, loginWithGoogle, loading } = useAuth();
+  const { login, loginWithGoogle, loginWithFacebook, loading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -52,6 +53,19 @@ const Login = () => {
       setError('Falha no login com Google. Tente novamente.');
     }
   };
+  
+  const handleFacebookLogin = async () => {
+    try {
+      await loginWithFacebook();
+      toast({
+        title: "Login com Facebook bem-sucedido",
+        description: "Bem-vindo ao MOVES SSP!",
+      });
+      navigate('/dashboard');
+    } catch (err) {
+      setError('Falha no login com Facebook. Tente novamente.');
+    }
+  };
 
   return (
     <Layout showNav={false}>
@@ -65,6 +79,20 @@ const Login = () => {
           </p>
         </div>
         
+        <Alert className="mb-6 bg-amber-50 border-amber-200 text-amber-800">
+          <AlertDescription>
+            Este é apenas um protótipo sendo desenvolvido por um estudante.
+            <a 
+              href="https://instagram.com/welziinho" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="block mt-1 text-primary hover:underline"
+            >
+              Instagram: @welziinho
+            </a>
+          </AlertDescription>
+        </Alert>
+        
         <Card className="animate-fadeIn">
           <CardHeader>
             <CardTitle>Login</CardTitle>
@@ -73,7 +101,7 @@ const Login = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="mb-6">
+            <div className="flex flex-col gap-3 mb-6">
               <Button 
                 type="button" 
                 variant="outline" 
@@ -88,6 +116,17 @@ const Login = () => {
                   <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z" />
                 </svg>
                 Entrar com Google
+              </Button>
+              
+              <Button 
+                type="button" 
+                variant="outline" 
+                className="w-full flex items-center justify-center gap-2 bg-blue-50 hover:bg-blue-100 text-blue-600 border-blue-200"
+                onClick={handleFacebookLogin}
+                disabled={loading}
+              >
+                <Facebook size={18} />
+                Entrar com Facebook
               </Button>
             </div>
             
