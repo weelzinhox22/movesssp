@@ -19,6 +19,7 @@ const StudentRegistration = () => {
   const [email, setEmail] = useState('');
   const [registrationNumber, setRegistrationNumber] = useState('');
   const [course, setCourse] = useState('');
+  const [otherCourse, setOtherCourse] = useState('');
   const [graduationYear, setGraduationYear] = useState('');
   const [campus, setCampus] = useState('');
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
@@ -39,8 +40,16 @@ const StudentRegistration = () => {
     e.preventDefault();
     setError('');
     
-    if (!name || !email || !registrationNumber || !course || !graduationYear || !campus) {
+    if (!name || !email || !registrationNumber || !campus || !graduationYear) {
       setError('Por favor, preencha todos os campos obrigatórios.');
+      return;
+    }
+    
+    // Handle course selection logic
+    const finalCourse = course === 'outro' ? otherCourse : course;
+    
+    if (!finalCourse) {
+      setError('Por favor, selecione ou informe seu curso.');
       return;
     }
     
@@ -49,7 +58,7 @@ const StudentRegistration = () => {
         name,
         email,
         registrationNumber,
-        course,
+        course: finalCourse,
         graduationYear,
         campus
       });
@@ -192,7 +201,7 @@ const StudentRegistration = () => {
                       />
                     </div>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="course" className="flex items-center gap-2">
                           <School size={16} />
@@ -203,15 +212,56 @@ const StudentRegistration = () => {
                             <SelectValue placeholder="Selecione seu curso" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="engenharia">Engenharia</SelectItem>
-                            <SelectItem value="medicina">Medicina</SelectItem>
-                            <SelectItem value="direito">Direito</SelectItem>
-                            <SelectItem value="computacao">Ciência da Computação</SelectItem>
                             <SelectItem value="administracao">Administração</SelectItem>
+                            <SelectItem value="agronomia">Agronomia</SelectItem>
+                            <SelectItem value="arquitetura">Arquitetura e Urbanismo</SelectItem>
+                            <SelectItem value="biomedicina">Biomedicina</SelectItem>
+                            <SelectItem value="ciencias_biologicas">Ciências Biológicas</SelectItem>
+                            <SelectItem value="ciencias_contabeis">Ciências Contábeis</SelectItem>
+                            <SelectItem value="ciencias_economicas">Ciências Econômicas</SelectItem>
+                            <SelectItem value="ciencia_da_computacao">Ciência da Computação</SelectItem>
+                            <SelectItem value="design">Design</SelectItem>
+                            <SelectItem value="direito">Direito</SelectItem>
+                            <SelectItem value="educacao_fisica">Educação Física</SelectItem>
+                            <SelectItem value="enfermagem">Enfermagem</SelectItem>
+                            <SelectItem value="engenharia_civil">Engenharia Civil</SelectItem>
+                            <SelectItem value="engenharia_eletrica">Engenharia Elétrica</SelectItem>
+                            <SelectItem value="engenharia_mecanica">Engenharia Mecânica</SelectItem>
+                            <SelectItem value="engenharia_producao">Engenharia de Produção</SelectItem>
+                            <SelectItem value="engenharia_quimica">Engenharia Química</SelectItem>
+                            <SelectItem value="engenharia_software">Engenharia de Software</SelectItem>
+                            <SelectItem value="farmacia">Farmácia</SelectItem>
+                            <SelectItem value="fisioterapia">Fisioterapia</SelectItem>
+                            <SelectItem value="geografia">Geografia</SelectItem>
+                            <SelectItem value="historia">História</SelectItem>
+                            <SelectItem value="jornalismo">Jornalismo</SelectItem>
+                            <SelectItem value="letras">Letras</SelectItem>
+                            <SelectItem value="marketing">Marketing</SelectItem>
+                            <SelectItem value="matematica">Matemática</SelectItem>
+                            <SelectItem value="medicina">Medicina</SelectItem>
+                            <SelectItem value="medicina_veterinaria">Medicina Veterinária</SelectItem>
+                            <SelectItem value="nutricao">Nutrição</SelectItem>
+                            <SelectItem value="odontologia">Odontologia</SelectItem>
+                            <SelectItem value="pedagogia">Pedagogia</SelectItem>
                             <SelectItem value="psicologia">Psicologia</SelectItem>
+                            <SelectItem value="publicidade">Publicidade e Propaganda</SelectItem>
+                            <SelectItem value="quimica">Química</SelectItem>
+                            <SelectItem value="servico_social">Serviço Social</SelectItem>
+                            <SelectItem value="sistemas_informacao">Sistemas de Informação</SelectItem>
                             <SelectItem value="outro">Outro</SelectItem>
                           </SelectContent>
                         </Select>
+                        
+                        {course === 'outro' && (
+                          <div className="mt-2">
+                            <Input
+                              id="otherCourse"
+                              value={otherCourse}
+                              onChange={(e) => setOtherCourse(e.target.value)}
+                              placeholder="Informe seu curso"
+                            />
+                          </div>
+                        )}
                       </div>
                       
                       <div className="space-y-2">
@@ -230,28 +280,24 @@ const StudentRegistration = () => {
                             <SelectItem value="2027">2027</SelectItem>
                             <SelectItem value="2028">2028</SelectItem>
                             <SelectItem value="2029">2029</SelectItem>
+                            <SelectItem value="2030">2030</SelectItem>
+                            <SelectItem value="2031">2031</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
-                      
-                      <div className="space-y-2">
-                        <Label htmlFor="campus" className="flex items-center gap-2">
-                          <MapPin size={16} />
-                          Campus
-                        </Label>
-                        <Select value={campus} onValueChange={setCampus}>
-                          <SelectTrigger id="campus">
-                            <SelectValue placeholder="Selecione o campus" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="central">Campus Central</SelectItem>
-                            <SelectItem value="norte">Campus Norte</SelectItem>
-                            <SelectItem value="sul">Campus Sul</SelectItem>
-                            <SelectItem value="leste">Campus Leste</SelectItem>
-                            <SelectItem value="oeste">Campus Oeste</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="campus" className="flex items-center gap-2">
+                        <MapPin size={16} />
+                        Campus
+                      </Label>
+                      <Input 
+                        id="campus"
+                        value={campus} 
+                        onChange={(e) => setCampus(e.target.value)} 
+                        placeholder="Nome do campus onde você estuda"
+                      />
                     </div>
                     
                     <div className="space-y-2">
