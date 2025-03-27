@@ -32,61 +32,63 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <ThemeProvider defaultTheme="light">
-      <AuthProvider>
-        <StudentProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <Routes>
-              {/* Public routes */}
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              
-              {/* Protected routes */}
-              <Route 
-                path="/" 
-                element={
-                  <ProtectedRoute>
-                    <Navigate to="/dashboard" replace />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/dashboard" 
-                element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/registration" 
-                element={
-                  <ProtectedRoute>
-                    <StudentRegistration />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/id-card" 
-                element={
-                  <ProtectedRoute>
-                    <IdCard />
-                  </ProtectedRoute>
-                } 
-              />
-              
-              {/* Catch-all route */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </TooltipProvider>
-        </StudentProvider>
-      </AuthProvider>
-    </ThemeProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider defaultTheme="light">
+        <AuthProvider>
+          <StudentProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <Routes>
+                {/* Public routes */}
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                
+                {/* Protected routes */}
+                <Route 
+                  path="/" 
+                  element={
+                    <ProtectedRoute>
+                      <Navigate to="/dashboard" replace />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/dashboard" 
+                  element={
+                    <ProtectedRoute>
+                      <Dashboard />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/registration" 
+                  element={
+                    <ProtectedRoute>
+                      <StudentRegistration />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/id-card" 
+                  element={
+                    <ProtectedRoute>
+                      <IdCard />
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                {/* Catch-all route */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </TooltipProvider>
+          </StudentProvider>
+        </AuthProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
