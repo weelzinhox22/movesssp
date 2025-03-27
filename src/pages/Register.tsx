@@ -70,15 +70,15 @@ const Register = () => {
     <Layout showNav={false}>
       <div className="container max-w-md mx-auto px-4 py-12">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-primary mb-2">
-            MOVES <span className="text-accent">SSP</span>
+          <h1 className="text-3xl font-bold gradient-text mb-2">
+            MOVES SSP
           </h1>
           <p className="text-muted-foreground">
             Crie sua conta para o transporte universitário
           </p>
         </div>
         
-        <Alert className="mb-6 bg-amber-50 border-amber-200 text-amber-800">
+        <Alert className="mb-6 border border-accent/20 bg-accent/5">
           <AlertDescription className="flex items-center justify-between flex-wrap gap-2">
             <span>Este é apenas um protótipo sendo desenvolvido por um estudante.</span>
             <a 
@@ -121,7 +121,7 @@ const Register = () => {
               <Button 
                 type="button" 
                 variant="outline" 
-                className="w-full flex items-center justify-center gap-2 bg-blue-50 hover:bg-blue-100 text-blue-600 border-blue-200"
+                className="w-full flex items-center justify-center gap-2"
                 onClick={handleFacebookLogin}
                 disabled={loading}
               >
@@ -143,7 +143,7 @@ const Register = () => {
           
             <form onSubmit={handleSubmit} className="space-y-4">
               {error && (
-                <div className="bg-red-50 border border-red-200 text-red-600 rounded-md p-3 flex items-center text-sm">
+                <div className="bg-destructive/10 border border-destructive/20 text-destructive rounded-md p-3 flex items-center text-sm">
                   <AlertCircle size={16} className="mr-2" />
                   {error}
                 </div>
