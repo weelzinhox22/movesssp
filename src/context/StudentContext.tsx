@@ -63,7 +63,8 @@ export const StudentProvider: React.FC<{ children: React.ReactNode }> = ({ child
         throw error;
       }
       
-      const mappedStudent = mapSupabaseToStudent(data as SupabaseStudent);
+      // Safely cast the data to SupabaseStudent before mapping
+      const mappedStudent = data ? mapSupabaseToStudent(data as SupabaseStudent) : null;
       setStudent(mappedStudent);
       
       // Fetch documents (in a real app - here we'll use mock data)
