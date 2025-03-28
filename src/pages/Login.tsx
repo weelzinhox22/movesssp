@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
@@ -16,7 +15,7 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const { login, loginWithGoogle, loginWithFacebook, loading } = useAuth();
+  const { login, loginWithGoogle, loading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -44,26 +43,8 @@ const Login = () => {
   const handleGoogleLogin = async () => {
     try {
       await loginWithGoogle();
-      toast({
-        title: "Login com Google bem-sucedido",
-        description: "Bem-vindo ao MOVES SSP!",
-      });
-      navigate('/dashboard');
     } catch (err) {
       setError('Falha no login com Google. Tente novamente.');
-    }
-  };
-  
-  const handleFacebookLogin = async () => {
-    try {
-      await loginWithFacebook();
-      toast({
-        title: "Login com Facebook bem-sucedido",
-        description: "Bem-vindo ao MOVES SSP!",
-      });
-      navigate('/dashboard');
-    } catch (err) {
-      setError('Falha no login com Facebook. Tente novamente.');
     }
   };
 
@@ -116,17 +97,6 @@ const Login = () => {
                   <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z" />
                 </svg>
                 Entrar com Google
-              </Button>
-              
-              <Button 
-                type="button" 
-                variant="outline" 
-                className="w-full flex items-center justify-center gap-2"
-                onClick={handleFacebookLogin}
-                disabled={loading}
-              >
-                <Facebook size={18} />
-                Entrar com Facebook
               </Button>
             </div>
             

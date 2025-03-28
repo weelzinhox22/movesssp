@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
@@ -7,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import Layout from '@/components/Layout';
-import { AlertCircle, Facebook, Instagram } from 'lucide-react';
+import { AlertCircle, Instagram } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -18,7 +17,7 @@ const Register = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
-  const { register, loginWithGoogle, loginWithFacebook, loading } = useAuth();
+  const { register, loginWithGoogle, loading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -54,15 +53,6 @@ const Register = () => {
       navigate('/dashboard');
     } catch (err) {
       setError('Falha no login com Google. Tente novamente.');
-    }
-  };
-  
-  const handleFacebookLogin = async () => {
-    try {
-      await loginWithFacebook();
-      navigate('/dashboard');
-    } catch (err) {
-      setError('Falha no login com Facebook. Tente novamente.');
     }
   };
 
@@ -116,17 +106,6 @@ const Register = () => {
                   <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z" />
                 </svg>
                 Registrar com Google
-              </Button>
-              
-              <Button 
-                type="button" 
-                variant="outline" 
-                className="w-full flex items-center justify-center gap-2"
-                onClick={handleFacebookLogin}
-                disabled={loading}
-              >
-                <Facebook size={18} />
-                Registrar com Facebook
               </Button>
             </div>
             

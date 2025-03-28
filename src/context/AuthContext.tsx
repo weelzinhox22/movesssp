@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User } from '../models/types';
 import { useToast } from "@/components/ui/use-toast";
@@ -36,7 +35,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const { toast } = useToast();
 
   useEffect(() => {
-    // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         setSession(session);
@@ -52,7 +50,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     );
 
-    // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       if (session?.user) {
@@ -115,7 +112,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.error(`Erro ao fazer login com ${provider}:`, error);
       toast({
         title: "Erro de autenticação",
-        description: error.message || `Não foi possível fazer login com ${provider}. Tente novamente.`,
+        description: error.message || `Não foi possível fazer login com ${provider}. Verifique se este provedor está habilitado no Supabase.`,
         variant: "destructive",
       });
       setLoading(false);
