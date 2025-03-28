@@ -2,127 +2,161 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User } from '../models/types';
 import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { Session, Provider } from '@supabase/supabase-js';
 
 interface AuthContextType {
   user: User | null;
+  session: Session | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   loginWithGoogle: () => Promise<void>;
   loginWithFacebook: () => Promise<void>;
   register: (email: string, password: string, name: string) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
+  session: null,
   loading: true,
   login: async () => {},
   loginWithGoogle: async () => {},
   loginWithFacebook: async () => {},
   register: async () => {},
-  logout: () => {},
+  logout: async () => {},
 });
 
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
   useEffect(() => {
-    // This would normally check with a real backend
-    // For now we'll check localStorage
-    const savedUser = localStorage.getItem('user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
-    setLoading(false);
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setSession(session);
+        if (session?.user) {
+          setUser({
+            id: session.user.id,
+            email: session.user.email || '',
+            name: session.user.user_metadata.name || session.user.user_metadata.full_name || ''
+          });
+        } else {
+          setUser(null);
+        }
+      }
+    );
+
+    // Check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      if (session?.user) {
+        setUser({
+          id: session.user.id,
+          email: session.user.email || '',
+          name: session.user.user_metadata.name || session.user.user_metadata.full_name || ''
+        });
+      }
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const login = async (email: string, password: string) => {
-    // Mock login - would connect to a real backend
     setLoading(true);
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+      
+      if (error) {
+        throw error;
+      }
+      
+      toast({
+        title: "Login realizado",
+        description: "Você está conectado à sua conta.",
+      });
+    } catch (error: any) {
+      console.error("Erro ao fazer login:", error);
+      toast({
+        title: "Erro de autenticação",
+        description: error.message || "Não foi possível fazer login. Verifique suas credenciais.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loginWithProvider = async (provider: Provider) => {
+    setLoading(true);
     
-    // Create mock user (this would normally come from the backend)
-    const mockUser: User = {
-      id: 'user-123',
-      email: email,
-      name: 'Mock User'
-    };
-    
-    // Save to localStorage for persistence
-    localStorage.setItem('user', JSON.stringify(mockUser));
-    setUser(mockUser);
-    setLoading(false);
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: window.location.origin
+        }
+      });
+      
+      if (error) {
+        throw error;
+      }
+    } catch (error: any) {
+      console.error(`Erro ao fazer login com ${provider}:`, error);
+      toast({
+        title: "Erro de autenticação",
+        description: error.message || `Não foi possível fazer login com ${provider}. Tente novamente.`,
+        variant: "destructive",
+      });
+      setLoading(false);
+    }
   };
 
   const loginWithGoogle = async () => {
-    // Mock Google login - would connect to a real backend with OAuth
-    setLoading(true);
-    
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Create mock Google user
-      const mockGoogleUser: User = {
-        id: 'google-user-' + Date.now().toString(),
-        email: 'user@gmail.com',
-        name: 'Google User'
-      };
-      
-      // Save to localStorage for persistence
-      localStorage.setItem('user', JSON.stringify(mockGoogleUser));
-      setUser(mockGoogleUser);
-      
-      toast({
-        title: "Login com Google realizado",
-        description: "Autenticação via Google concluída com sucesso!",
-      });
-    } catch (error) {
-      console.error("Erro ao fazer login com Google:", error);
-      toast({
-        title: "Erro de autenticação",
-        description: "Não foi possível fazer login com o Google. Tente novamente.",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
+    await loginWithProvider('google');
   };
   
   const loginWithFacebook = async () => {
-    // Mock Facebook login - would connect to a real backend with OAuth
+    await loginWithProvider('facebook');
+  };
+
+  const register = async (email: string, password: string, name: string) => {
     setLoading(true);
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Create mock Facebook user
-      const mockFacebookUser: User = {
-        id: 'facebook-user-' + Date.now().toString(),
-        email: 'user@facebook.com',
-        name: 'Facebook User'
-      };
-      
-      // Save to localStorage for persistence
-      localStorage.setItem('user', JSON.stringify(mockFacebookUser));
-      setUser(mockFacebookUser);
-      
-      toast({
-        title: "Login com Facebook realizado",
-        description: "Autenticação via Facebook concluída com sucesso!",
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            name
+          }
+        }
       });
-    } catch (error) {
-      console.error("Erro ao fazer login com Facebook:", error);
+      
+      if (error) {
+        throw error;
+      }
+      
       toast({
-        title: "Erro de autenticação",
-        description: "Não foi possível fazer login com o Facebook. Tente novamente.",
+        title: "Cadastro realizado",
+        description: "Sua conta foi criada com sucesso.",
+      });
+    } catch (error: any) {
+      console.error("Erro ao criar conta:", error);
+      toast({
+        title: "Erro de cadastro",
+        description: error.message || "Não foi possível criar sua conta. Tente novamente.",
         variant: "destructive",
       });
     } finally {
@@ -130,33 +164,41 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const register = async (email: string, password: string, name: string) => {
-    // Mock registration - would connect to a real backend
-    setLoading(true);
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Create mock user
-    const mockUser: User = {
-      id: 'user-' + Date.now().toString(),
-      email: email,
-      name: name
-    };
-    
-    // Save to localStorage for persistence
-    localStorage.setItem('user', JSON.stringify(mockUser));
-    setUser(mockUser);
-    setLoading(false);
-  };
-
-  const logout = () => {
-    localStorage.removeItem('user');
-    setUser(null);
+  const logout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) {
+        throw error;
+      }
+      
+      toast({
+        title: "Logout realizado",
+        description: "Você saiu da sua conta.",
+      });
+    } catch (error: any) {
+      console.error("Erro ao fazer logout:", error);
+      toast({
+        title: "Erro",
+        description: error.message || "Não foi possível sair da sua conta. Tente novamente.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, loginWithGoogle, loginWithFacebook, register, logout }}>
+    <AuthContext.Provider 
+      value={{ 
+        user, 
+        session,
+        loading, 
+        login, 
+        loginWithGoogle, 
+        loginWithFacebook, 
+        register, 
+        logout 
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
