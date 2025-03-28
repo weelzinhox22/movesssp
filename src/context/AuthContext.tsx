@@ -1,16 +1,15 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User } from '../models/types';
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Session, Provider } from '@supabase/supabase-js';
+import { Session } from '@supabase/supabase-js';
 
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  loginWithGoogle: () => Promise<void>;
-  loginWithFacebook: () => Promise<void>;
   register: (email: string, password: string, name: string) => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -20,8 +19,6 @@ const AuthContext = createContext<AuthContextType>({
   session: null,
   loading: true,
   login: async () => {},
-  loginWithGoogle: async () => {},
-  loginWithFacebook: async () => {},
   register: async () => {},
   logout: async () => {},
 });
@@ -94,39 +91,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const loginWithProvider = async (provider: Provider) => {
-    setLoading(true);
-    
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider,
-        options: {
-          redirectTo: window.location.origin
-        }
-      });
-      
-      if (error) {
-        throw error;
-      }
-    } catch (error: any) {
-      console.error(`Erro ao fazer login com ${provider}:`, error);
-      toast({
-        title: "Erro de autenticação",
-        description: error.message || `Não foi possível fazer login com ${provider}. Verifique se este provedor está habilitado no Supabase.`,
-        variant: "destructive",
-      });
-      setLoading(false);
-    }
-  };
-
-  const loginWithGoogle = async () => {
-    await loginWithProvider('google');
-  };
-  
-  const loginWithFacebook = async () => {
-    await loginWithProvider('facebook');
-  };
-
   const register = async (email: string, password: string, name: string) => {
     setLoading(true);
     
@@ -190,8 +154,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         session,
         loading, 
         login, 
-        loginWithGoogle, 
-        loginWithFacebook, 
         register, 
         logout 
       }}
