@@ -63,8 +63,13 @@ export const StudentProvider: React.FC<{ children: React.ReactNode }> = ({ child
         throw error;
       }
       
-      // Safely cast the data to SupabaseStudent before mapping
-      const mappedStudent = data ? mapSupabaseToStudent(data as SupabaseStudent) : null;
+      // Safely handle the data - first check if it exists, then cast
+      let mappedStudent: Student | null = null;
+      if (data) {
+        // Cast to unknown first, then to SupabaseStudent to avoid type errors
+        mappedStudent = mapSupabaseToStudent(data as unknown as SupabaseStudent);
+      }
+      
       setStudent(mappedStudent);
       
       // Fetch documents (in a real app - here we'll use mock data)
