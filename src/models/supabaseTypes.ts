@@ -1,4 +1,6 @@
 
+import { Student } from './types';
+
 export type SupabaseStudent = {
   id: string;
   name: string;
